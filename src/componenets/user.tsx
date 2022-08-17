@@ -1,26 +1,91 @@
 import Sidebar from "../common/Sidebar";
 import Table from "react-bootstrap/Table";
-import React, { useEffect, useState } from "react";
-import Adduser from "./Adduser";
-import { Button, Form } from "react-bootstrap";
+import React, { FormEventHandler, useEffect, useState } from "react";
+import { Button } from "react-bootstrap";
 import { userList } from "../services/ApiCalls";
-import { Navigate, useNavigate } from "react-router-dom";
 import Modal from "react-bootstrap/Modal";
 import "bootstrap/dist/css/bootstrap.min.css";
+import { Formik, Form, Field } from "formik";
+import * as Yup from "yup";
 
 interface UserListType {
-  id: number;
+  id: number | null;
+  image: string;
   firstName: string;
   lastName: string;
   maidenName: string;
-  age: number;
+  age: number | null;
   email: string;
 }
 
 export default function User() {
-  let [idCounter, setIdCounter] = useState(1);
   let [list, setList] = useState<UserListType[]>([]);
-  let navigate = useNavigate();
+
+  const [addData, setAddData] = useState<UserListType>({
+    id: null,
+    image: "",
+    firstName: "",
+    lastName: "",
+    maidenName: "",
+    age: null,
+    email: "",
+  });
+
+  const validate = Yup.object({
+    id: Yup.number()
+      .max(222, "must be 3 character or less ")
+      .required("Required"),
+    firstName: Yup.string()
+      .max(20, "must be 20 character or less ")
+      .required("Required"),
+    lastName: Yup.string()
+      .max(20, "must be 20 character or less ")
+      .required("Required"),
+    maidenName: Yup.string()
+      .max(20, "must be 20 character or less ")
+      .required("Required"),
+    age: Yup.number()
+      .max(90, "must be 2 character or less ")
+      .required("Required"),
+    email: Yup.string().email("invalid email").required("Required email"),
+  });
+
+  // useEffect(() => {
+  //   console.log("addData ==> ", addData);
+  // }, [addData]);
+
+  // useEffect(() => {
+  //   console.log("list ==> ", list);
+  // }, [list]);
+
+  // const handleChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+  //   let name = event.target.name;
+  //   let value: string;
+  //   if (name == "image") {
+  //     if (event.target.files && event.target.files[0]) {
+  //       value = URL.createObjectURL(event.target.files[0]);
+  //     }
+  //   } else {
+  //     value = event.target.value;
+  //   }
+
+  //   setAddData((prevalue) => {
+  //     return {
+  //       ...prevalue,
+  //       [name]: value,
+  //     };
+  //   });
+  // };
+
+  // const handleSubmit = (event: any) => {
+  //   console.log("hello");
+
+  //   event.preventDefault();
+  //   const newArr = [...list];
+  //   newArr.push(addData);
+  //   setList(newArr);
+  //   console.log("hello");
+  // };
 
   const [show, setShow] = useState(false);
   const handleClose = () => setShow(false);
@@ -34,33 +99,11 @@ export default function User() {
     getUserList();
   }, []);
 
-  const deleteUser = (user: { id: number }) => {
+  const deleteUser = (user: UserListType) => {
     const newUserList = list.filter((item) => item.id != user.id);
     setList(newUserList);
   };
 
-
-const initialValues={
-
-
-  firstName:"",
-  lastName: "",
-  maidenName:"",
-  age: "",
-  email:"",
-  
-}
-
-const HandleChange = (e) => {
-  const keyword = e?.target.value
-  updateKeyword(keyword)
- }
-
-
-
-
-
-  
   return (
     <>
       <h1>USERS</h1>
@@ -71,6 +114,7 @@ const HandleChange = (e) => {
         <thead>
           <tr>
             <th>#</th>
+            <th>image</th>
             <th>First Name</th>
             <th>Last Name</th>
             <th>maidenName</th>
@@ -85,6 +129,9 @@ const HandleChange = (e) => {
             return (
               <tr key={item.id}>
                 <td>{item.id}</td>
+                <td>
+                  <img src={item.image}></img>
+                </td>
                 <td>{item.firstName}</td>
                 <td>{item.lastName}</td>
                 <td>{item.maidenName}</td>
@@ -103,26 +150,70 @@ const HandleChange = (e) => {
         </tbody>
       </Table>
       <Modal show={show} onHide={handleClose}>
-        <h1>AddUser</h1>
-        <Form onSubmit={}>
-          
-       <input 
-       type="name" 
-       placeholder="FirstName"
-       onChange={HandleChange}>
+        <Formik
+          initialValues={{
+            id: null,
+            image: "",
+            firstName: "",
+            lastName: "",
+            maidenName: "",
+            age: null,
+            email: "",
+          }}
+          validationSchema={validate}
+          onSubmit={(values) => {
+            console.log("values ==> ", values);
+            console.log("hello");
 
-       </input>
-        <input type="name" placeholder="lasttName"></input>
-        <input type="name" placeholder="MaidenName"></input>
-        <input type="age" placeholder="age"></input>
-        <input type="email" placeholder="email"></input>
-       </Form>
-       
-          
-          <Button variant="primary" onClick={handleClose}>
-            AddUser
-          </Button>
-       
+            const newArr = [...list];
+            newArr.push(values);
+            setList(newArr);
+            console.log("hello");
+            handleClose();
+          }}
+        >
+          {({ errors, touched }) => (
+            <Form>
+              <label>id</label>
+              <Field name="id" />
+              {errors.id && touched.id ? <div>{errors.id}</div> : null}
+
+              <label>image</label>
+              <Field name="image" type="file" />
+              {errors.image && touched.image ? <div>{errors.image}</div> : null}
+
+              <label>FirstName</label>
+              <Field name="firstName" type="text" />
+              {errors.firstName && touched.firstName ? (
+                <div>{errors.firstName}</div>
+              ) : null}
+
+              <label>lastName</label>
+              <Field name="lastName" />
+              {errors.lastName && touched.lastName ? (
+                <div>{errors.lastName}</div>
+              ) : null}
+
+              <label>Mname</label>
+              <Field name="maidenName" />
+              {errors.maidenName && touched.maidenName ? (
+                <div>{errors.maidenName}</div>
+              ) : null}
+
+              <label>Age</label>
+              <Field name="age" />
+              {errors.age && touched.age ? <div>{errors.age}</div> : null}
+
+              <label>Email</label>
+              <Field name="email" />
+              {errors.email && touched.email ? <div>{errors.email}</div> : null}
+
+              <Button type="submit" className="btn_sub">
+                Submit{" "}
+              </Button>
+            </Form>
+          )}
+        </Formik>
       </Modal>
       <Sidebar />
     </>
