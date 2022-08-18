@@ -3,6 +3,7 @@ import { Button, Table, Form } from "react-bootstrap";
 import Sidebar from "../common/Sidebar";
 import { productList } from "../services/ApiCalls";
 import Modal from "react-bootstrap/Modal";
+import DashboardLayout from "./DashboardLayout";
 
 interface productListType {
   id: number | null;
@@ -73,99 +74,101 @@ export default function Product() {
   };
 
   return (
-    <>
-      <h1>Products</h1>
-      <Table striped bordered hover>
-        <Button onClick={handleShow}> ADDProduct</Button>
+    <DashboardLayout>
+      <>
+        <h1>Products</h1>
+        <Table striped bordered hover>
+          <Button onClick={handleShow}> ADDProduct</Button>
 
-        <thead>
-          <tr>
-            <th>#</th>
-            <th>title</th>
-            <th>image</th>
-            <th>price</th>
-            <th>rating</th>
-            <th>brand</th>
-            <th>Edit</th>
-            <th>Delete</th>
-          </tr>
-        </thead>
-        <tbody>
-          {data.map((item) => {
-            return (
-              <tr key={item.id}>
-                <td>{item.id}</td>
+          <thead>
+            <tr>
+              <th>#</th>
+              <th>title</th>
+              <th>image</th>
+              <th>price</th>
+              <th>rating</th>
+              <th>brand</th>
+              <th>Edit</th>
+              <th>Delete</th>
+            </tr>
+          </thead>
+          <tbody>
+            {data.map((item) => {
+              return (
+                <tr key={item.id}>
+                  <td>{item.id}</td>
 
-                <td>{item.title}</td>
-                <td>
-                  <img src={item.thumbnail}></img>
-                </td>
+                  <td>{item.title}</td>
+                  <td>
+                    <img src={item.thumbnail}></img>
+                  </td>
 
-                <td>{item.price}</td>
-                <td>{item.rating}</td>
-                <td>{item.brand}</td>
+                  <td>{item.price}</td>
+                  <td>{item.rating}</td>
+                  <td>{item.brand}</td>
 
-                <td>
-                  <Button>Edit</Button>
-                </td>
-                <td>
-                  <Button onClick={() => deleteUser(item)}>
-                    DeleteProduct
-                  </Button>
-                </td>
-              </tr>
-            );
-          })}
-        </tbody>
-      </Table>
-      <Modal show={show} onHide={handleClose}>
-        <Form onSubmit={handleSubmit}>
-          <>
-            <strong>AddProduct</strong>
-          </>
-          <br></br>
-          <label>id</label>
-          <input
-            type="id"
-            placeholder="id.."
-            name="id"
-            onChange={handleChange}
-          ></input>
-          <label>title</label>
-          <input
-            type="name"
-            placeholder="Title"
-            name="title"
-            onChange={handleChange}
-          ></input>
-          <label>price</label>
-          <input
-            type="text"
-            placeholder="price"
-            name="price"
-            onChange={handleChange}
-          ></input>
-          <label>rating</label>
-          <input
-            type="text"
-            name="rating"
-            onChange={handleChange}
-            placeholder="rating.."
-          ></input>
-          <label>brand </label>
-          <input
-            type="text"
-            name="brand	"
-            onChange={handleChange}
-            placeholder="brand"
-          ></input>
+                  <td>
+                    <Button>Edit</Button>
+                  </td>
+                  <td>
+                    <Button onClick={() => deleteUser(item)}>
+                      DeleteProduct
+                    </Button>
+                  </td>
+                </tr>
+              );
+            })}
+          </tbody>
+        </Table>
+        <Modal show={show} onHide={handleClose}>
+          <Form onSubmit={handleSubmit}>
+            <>
+              <strong>AddProduct</strong>
+            </>
+            <br></br>
+            <label>id</label>
+            <input
+              type="id"
+              placeholder="id.."
+              name="id"
+              onChange={handleChange}
+            ></input>
+            <label>title</label>
+            <input
+              type="name"
+              placeholder="Title"
+              name="title"
+              onChange={handleChange}
+            ></input>
+            <label>price</label>
+            <input
+              type="text"
+              placeholder="price"
+              name="price"
+              onChange={handleChange}
+            ></input>
+            <label>rating</label>
+            <input
+              type="text"
+              name="rating"
+              onChange={handleChange}
+              placeholder="rating.."
+            ></input>
+            <label>brand </label>
+            <input
+              type="text"
+              name="brand	"
+              onChange={handleChange}
+              placeholder="brand"
+            ></input>
 
-          <Button variant="primary" type="submit" onClick={handleClose}>
-            Addproduct
-          </Button>
-        </Form>
-      </Modal>
-      <Sidebar />
-    </>
+            <Button variant="primary" type="submit" onClick={handleClose}>
+              Addproduct
+            </Button>
+          </Form>
+        </Modal>
+        {/* <Sidebar /> */}
+      </>
+    </DashboardLayout>
   );
 }

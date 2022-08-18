@@ -7,10 +7,12 @@ import Modal from "react-bootstrap/Modal";
 import "bootstrap/dist/css/bootstrap.min.css";
 import { Formik, Form, Field } from "formik";
 import * as Yup from "yup";
+import { Navbar } from "../common/Navbar";
+import DashboardLayout from "./DashboardLayout";
 
 interface UserListType {
   id: number | null;
-  image: string;
+  image: string | React.ChangeEvent<HTMLInputElement> | null;
   firstName: string;
   lastName: string;
   maidenName: string;
@@ -105,117 +107,158 @@ export default function User() {
   };
 
   return (
-    <>
-      <h1>USERS</h1>
+    <DashboardLayout>
+      <>
+        <>
+          <strong>All Users</strong>{" "}
+        </>
 
-      <Table striped bordered hover>
-        <Button onClick={handleShow}>ADDUSER</Button>
-
-        <thead>
-          <tr>
-            <th>#</th>
-            <th>image</th>
-            <th>First Name</th>
-            <th>Last Name</th>
-            <th>maidenName</th>
-            <th>age</th>
-            <th>email</th>
-            <th>Edit</th>
-            <th>Delete</th>
-          </tr>
-        </thead>
-        <tbody>
-          {list.map((item) => {
-            return (
-              <tr key={item.id}>
-                <td>{item.id}</td>
-                <td>
-                  <img src={item.image}></img>
-                </td>
-                <td>{item.firstName}</td>
-                <td>{item.lastName}</td>
-                <td>{item.maidenName}</td>
-                <td>{item.age}</td>
-                <td>{item.email}</td>
-
-                <td>
-                  <Button>Edit</Button>
-                </td>
-                <td>
-                  <Button onClick={() => deleteUser(item)}>Delete</Button>
-                </td>
-              </tr>
-            );
-          })}
-        </tbody>
-      </Table>
-      <Modal show={show} onHide={handleClose}>
-        <Formik
-          initialValues={{
-            id: null,
-            image: "",
-            firstName: "",
-            lastName: "",
-            maidenName: "",
-            age: null,
-            email: "",
-          }}
-          validationSchema={validate}
-          onSubmit={(values) => {
-            console.log("values ==> ", values);
-            console.log("hello");
-
-            const newArr = [...list];
-            newArr.push(values);
-            setList(newArr);
-            console.log("hello");
-            handleClose();
-          }}
+        <table className="table">
+          {/* <Button onClick={handleShow}>ADDUSER</Button> */}
+          {/* <button
+          type="button"
+          className="btn btn-primary"
+          data-bs-toggle="modal"
+          data-bs-target="#myModal"
+          onClick={handleShow}
         >
-          {({ errors, touched }) => (
-            <Form>
-              <label>id</label>
-              <Field name="id" />
-              {errors.id && touched.id ? <div>{errors.id}</div> : null}
+          ADD USER
+        </button> */}
 
-              <label>image</label>
-              <Field name="image" type="file" />
-              {errors.image && touched.image ? <div>{errors.image}</div> : null}
+          <thead>
+            <tr>
+              <th scope="col">#</th>
+              <th scope="col">image</th>
+              <th scope="col">First Name</th>
+              <th scope="col">Last Name</th>
+              <th scope="col">maidenName</th>
+              <th scope="col">age</th>
+              <th scope="col">email</th>
+              <th scope="col">Edit</th>
+              <th scope="col">Delete</th>
+            </tr>
+          </thead>
+          <tbody>
+            {list.map((item) => {
+              return (
+                <tr key={item.id}>
+                  <td>{item.id}</td>
+                  <td>
+                    {typeof item.image === "string" ? (
+                      <img src={item.image}></img>
+                    ) : (
+                      ""
+                    )}
+                  </td>
+                  <td scope="row">{item.firstName}</td>
+                  <td scope="row">{item.lastName}</td>
+                  <td scope="row">{item.maidenName}</td>
+                  <td scope="row">{item.age}</td>
+                  <td scope="row">{item.email}</td>
 
-              <label>FirstName</label>
-              <Field name="firstName" type="text" />
-              {errors.firstName && touched.firstName ? (
-                <div>{errors.firstName}</div>
-              ) : null}
+                  <td>
+                    <Button>Edit</Button>
+                  </td>
+                  <td>
+                    <Button onClick={() => deleteUser(item)}>Delete</Button>
+                  </td>
+                </tr>
+              );
+            })}
+          </tbody>
+        </table>
+        <Modal show={show} onHide={handleClose}>
+          <Formik
+            initialValues={{
+              id: null,
+              image: "",
+              firstName: "",
+              lastName: "",
+              maidenName: "",
+              age: null,
+              email: "",
+            }}
+            validationSchema={validate}
+            onSubmit={(values) => {
+              console.log("values ==> ", values);
+              console.log("hello");
+              const params = {
+                ...values,
+                image:
+                  typeof values.image !== "string"
+                    ? URL.createObjectURL(values.image)
+                    : "",
+              };
+              const newArr = [...list];
+              newArr.push(values);
+              setList(newArr);
+              console.log(newArr);
+              console.log("hello");
+              handleClose();
+            }}
+          >
+            {({ errors, touched, setFieldValue }) => (
+              <Form>
+                <label>id</label>
+                <Field name="id" />
+                {errors.id && touched.id ? <div>{errors.id}</div> : null}
 
-              <label>lastName</label>
-              <Field name="lastName" />
-              {errors.lastName && touched.lastName ? (
-                <div>{errors.lastName}</div>
-              ) : null}
+                <label>image</label>
+                <Field
+                  name="image"
+                  type="file"
+                  onChange={(
+                    event: React.ChangeEvent<HTMLInputElement> | null
+                  ) => {
+                    if (event?.currentTarget?.files) {
+                      setFieldValue("image", event.currentTarget.files[0]);
+                    }
+                  }}
+                />
+                {errors.image && touched.image ? (
+                  <div>{errors.image}</div>
+                ) : null}
 
-              <label>Mname</label>
-              <Field name="maidenName" />
-              {errors.maidenName && touched.maidenName ? (
-                <div>{errors.maidenName}</div>
-              ) : null}
+                <label>FirstName</label>
+                <Field name="firstName" type="text" />
+                {errors.firstName && touched.firstName ? (
+                  <div>{errors.firstName}</div>
+                ) : null}
 
-              <label>Age</label>
-              <Field name="age" />
-              {errors.age && touched.age ? <div>{errors.age}</div> : null}
+                <label>lastName</label>
+                <Field name="lastName" />
+                {errors.lastName && touched.lastName ? (
+                  <div>{errors.lastName}</div>
+                ) : null}
 
-              <label>Email</label>
-              <Field name="email" />
-              {errors.email && touched.email ? <div>{errors.email}</div> : null}
+                <label>Mname</label>
+                <Field name="maidenName" />
+                {errors.maidenName && touched.maidenName ? (
+                  <div>{errors.maidenName}</div>
+                ) : null}
 
-              <Button type="submit" className="btn_sub">
-                Submit{" "}
-              </Button>
-            </Form>
-          )}
-        </Formik>
-      </Modal>
-      <Sidebar />
-    </>
+                <label>Age</label>
+                <Field name="age" />
+                {errors.age && touched.age ? <div>{errors.age}</div> : null}
+
+                <div className="mb-3 mt-3">
+                  <label className="form-label">Email:</label>
+                  <Field name="email" className="form-control" />
+                  {errors.email && touched.email ? (
+                    <div>{errors.email}</div>
+                  ) : null}
+                </div>
+
+                <Button type="submit" className="btn_sub">
+                  Submit{" "}
+                </Button>
+              </Form>
+            )}
+          </Formik>
+        </Modal>
+        {/* <Navbar />
+      <Sidebar /> */}
+      </>
+    </DashboardLayout>
   );
 }

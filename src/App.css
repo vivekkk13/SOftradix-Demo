@@ -1,8 +1,88 @@
-@import 'react-pro-sidebar/dist/css/styles.css';
+*{
+  padding:0;
+  margin:0;
+}
+
+.contain{
+  height:100vh;
+  background-color: lightgray;
+  position:relative;
+  max-width: 1400px;
+}
+
+.contain .sidebar{
+ 
+  background-color:#fff;
+  height:100vh;
+  width:200px;
+  z-index:10;
+  padding-left:20px;
+  box-shadow:0px 15px 30px rgba(0,0,0,0.1);
+  margin-left: 0%;
+}
+.sidebar li:nth-child(1){
+      text-align: center;
+  padding: 15px 5px;
+  display: flex;
+  justify-content: center;
+  margin-right: 19px;
+  font-size: 36px;
+  font-weight: 900;
+  font-style: italic;
+  font-family: emoji;
+  padding-top:30px;
+}
+
+
+.sidebar li:hover:nth-child(1){
+  padding:30px 0px;
+  background-color:transparent;
+  color:#000;
+}
+
+.sidebar li{
+  padding:12px;
+  cursor:pointer;
+  transition:all 0.5s;
+  letter-spacing:1px;
+  display:flex;
+  align-items:center;
+   gap:10px;
+  border-top-left-radius:30px;
+  border-bottom-left-radius:30px;
+}
+
+.sidebar li span:nth-child(1){
+  font-size:16px;
+}
+
+.sidebar li span:nth-child(2){
+  font-size:14px;
+}
+
+.sidebar li:hover{
+  background-color:#EA2C62;
+  padding:12px;
+  color:#fff;
+  transition:all 0.5s;
+   
+}
+
+
+.contain.content{
+  
+  padding-left:75px;
+}
+.link-dark{
+  text-decoration: none;
+}
+span {
+  color: lightslategray;
+}
 
 
 
-
+/* 
 h1 {
   margin-left: 520px;
 }
@@ -56,4 +136,23 @@ input {
 btn_sub{
   margin-left: 220px;
   margin-top: 20px;
+} */
+
+.mainHeader{
+  position: relative;
+    top: 0;
+    width: 100%;
+    left: 0;
+    z-index: 99;
+}
+img {
+  height: 40px;
+}
+
+.mainBody{
+  display: flex;
+}
+.mainContent {
+  margin-left: 90px;
+  margin-top: 40px;
 }
