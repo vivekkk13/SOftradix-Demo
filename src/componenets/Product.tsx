@@ -77,19 +77,19 @@ export default function Product() {
     <DashboardLayout>
       <>
         <h1>Products</h1>
-        <Table striped bordered hover>
-          <Button onClick={handleShow}> ADDProduct</Button>
+        <table className="table table-bordered">
+          {/* <Button onClick={handleShow}> ADDProduct</Button> */}
 
           <thead>
             <tr>
               <th>#</th>
-              <th>title</th>
-              <th>image</th>
-              <th>price</th>
-              <th>rating</th>
-              <th>brand</th>
-              <th>Edit</th>
-              <th>Delete</th>
+              <th scope="col">title</th>
+              <th scope="col">image</th>
+              <th scope="col">price</th>
+              <th scope="col">rating</th>
+              <th scope="col">brand</th>
+              <th scope="col">Edit</th>
+              <th scope="col">Delete</th>
             </tr>
           </thead>
           <tbody>
@@ -119,7 +119,7 @@ export default function Product() {
               );
             })}
           </tbody>
-        </Table>
+        </table>
         <Modal show={show} onHide={handleClose}>
           <Form onSubmit={handleSubmit}>
             <>

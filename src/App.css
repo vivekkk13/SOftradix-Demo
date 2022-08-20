@@ -16,11 +16,12 @@
   height:100vh;
   width:200px;
   z-index:10;
-  padding-left:20px;
   box-shadow:0px 15px 30px rgba(0,0,0,0.1);
   margin-left: 0%;
+  padding: 1rem 0;
+  padding-left:20px;
 }
-.sidebar li:nth-child(1){
+/* .sidebar li:nth-child(1){
       text-align: center;
   padding: 15px 5px;
   display: flex;
@@ -31,14 +32,10 @@
   font-style: italic;
   font-family: emoji;
   padding-top:30px;
-}
+} */
 
 
-.sidebar li:hover:nth-child(1){
-  padding:30px 0px;
-  background-color:transparent;
-  color:#000;
-}
+
 
 .sidebar li{
   padding:12px;
@@ -62,7 +59,6 @@
 
 .sidebar li:hover{
   background-color:#EA2C62;
-  padding:12px;
   color:#fff;
   transition:all 0.5s;
    
@@ -139,20 +135,50 @@ btn_sub{
 } */
 
 .mainHeader{
-  position: relative;
+  position: fixed;
     top: 0;
     width: 100%;
     left: 0;
     z-index: 99;
 }
 img {
-  height: 40px;
+  height: 82px;
 }
 
 .mainBody{
   display: flex;
 }
 .mainContent {
-  margin-left: 90px;
-  margin-top: 40px;
+  margin-left: 284px;
+  margin-top: 90px;
+}
+.mainSidebar {
+  position: fixed;
+ 
+  /* border-radius: 2px; */
+  margin-top: 56px;
+  border-radius: 9px;
+}
+th {
+  font-size: smaller;
+}
+button.btn.btn-outline-warning {
+  margin-left: 831px;
+  margin-bottom: 8px;
+}
+.table-bordered>:not(caption)>*>* {
+  border-width: 1px 2px;
+}
+
+.modal-content {
+  border-radius: 20px;
+}
+th {
+  width: 90px;
+}
+.errorm {
+  color: #e94949;
+}
+.offcanvas-title.h5 {
+  font-size: 18px;
 }
