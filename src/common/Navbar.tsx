@@ -29,6 +29,9 @@ export const Navbar = () => {
                   <div className="collapse navbar-collapse" id="navbarScroll">
                     <li className="d-flex">
                       <a className="nav-link" aria-current="page">
+                        <span>
+                          <i className="fa fa-home" aria-hidden="true"></i>
+                        </span>
                         Home
                       </a>
                     </li>

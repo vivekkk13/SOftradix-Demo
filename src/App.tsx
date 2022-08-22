@@ -5,6 +5,7 @@ import User from "./componenets/user";
 import Product from "./componenets/Product";
 // import Adduser from "./componenets/Adduser";
 import { Navbar } from "./common/Navbar";
+import "font-awesome/css/font-awesome.min.css";
 
 function App() {
   return (
@@ -12,6 +13,7 @@ function App() {
       <HashRouter>
         <Routes>
           <Route path="/" element={<Dashboard />} />
+          <Route path="/Dashboard" element={<User />} />
           <Route path="/User" element={<User />} />
           <Route path="/Product" element={<Product />} />
           {/* <Route path="/Adduser" element={<Adduser />} /> */}

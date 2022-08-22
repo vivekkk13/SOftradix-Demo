@@ -2,7 +2,7 @@ import Sidebar from "../common/Sidebar";
 import Table from "react-bootstrap/Table";
 import React, { FormEventHandler, useEffect, useState } from "react";
 import { Button } from "react-bootstrap";
-import { userList } from "../services/ApiCalls";
+import { createUser, userList } from "../services/ApiCalls";
 import Modal from "react-bootstrap/Modal";
 import "bootstrap/dist/css/bootstrap.min.css";
 import { Formik, Form, Field } from "formik";
@@ -25,22 +25,13 @@ interface UserListType {
 export default function User() {
   let [list, setList] = useState<UserListType[]>([]);
   let [checkdelete, setCheckDelete] = useState({});
-  let [idCounter, setIdCounter] = useState(30);
+  const [search, setSearch] = useState<string>("");
+  const [addResponse, setAddResponse] = useState<any>({});
+  const [editUser, setEditUser] = useState("");
 
-  const [addData, setAddData] = useState<UserListType>({
-    id: null,
-    image: "",
-    firstName: "",
-    lastName: "",
-    maidenName: "",
-    age: null,
-    email: "",
-  });
+  /******        YUP validation start          ********/
 
   const validate = Yup.object({
-    id: Yup.number()
-      .max(222, "must be 3 character or less ")
-      .required("Required"),
     firstName: Yup.string().max(20, "").required("name is required"),
     lastName: Yup.string()
       .max(20, "must be 20 character or less")
@@ -51,6 +42,8 @@ export default function User() {
     age: Yup.number().max(100, "too short").required("age is required"),
     email: Yup.string().email("invalid email").required("Required email"),
   });
+
+  /******        YUP validation end       ********/
 
   // useEffect(() => {
   //   console.log("addData ==> ", addData);
@@ -89,51 +82,80 @@ export default function User() {
   //   console.log("hello");
   // };
 
+  /********     for open or closing Modal start         ****** */
   const [show, setShow] = useState(false);
   const handleClose = () => setShow(false);
   const handleShow = () => setShow(true);
+  /********     for open or closing Modal end       ****** */
+
+  /********     for open or closing offcanvas start         ****** */
 
   const [showw, setShoww] = useState(false);
 
   const handleClosee = () => setShoww(false);
   const handleShoww = () => setShoww(true);
+  /********     for open or closing Modal end      ****** */
 
-  const getUserList = async () => {
-    const res = await userList();
+  /**********   Get userlist api start *** */
+  const getUserList = async (search: string) => {
+    const res = await userList(search);
     setList(res?.data.users);
   };
   useEffect(() => {
-    getUserList();
-  }, []);
+    getUserList(search);
+  }, [search]);
 
+  /**********   Get userlist api end *** */
+
+  /*******   Function for delete a user (start)    ****** */
   const deleteUser = (user: any) => {
     const newUserList = list.filter((item) => item.id != user.id);
     setList(newUserList);
   };
+  /*******   Function for delete a user (end)    ****** */
+
+  /*******   Function for add a user (start)    ****** */
+  const addNewUser = async (values: any) => {
+    const response = await createUser(values);
+    console.log("response <===> ", response);
+    setAddResponse(response?.data);
+  };
+  useEffect(() => {
+    const newAns = [...list];
+    newAns.unshift(addResponse);
+    setList(newAns);
+  }, [addResponse]);
+
+  /*******   Function for add a user (end)    ****** */
 
   return (
     <DashboardLayout>
       <>
         <>
           <strong>All Users</strong>{" "}
-          <button className="btn btn-outline-warning" onClick={handleShoww}>
-            ADDUSER
+          <button
+            type="button"
+            className="btn btn-danger"
+            onClick={handleShoww}
+          >
+            Add User
+            <span>
+              <i className="fa fa-plus" aria-hidden="true"></i>
+            </span>
           </button>
+          <div className="form-outline">
+            <input
+              type="search"
+              id="form1"
+              className="form-control"
+              placeholder="Search user.."
+              aria-label="Search"
+              value={search}
+              onChange={(e) => setSearch(e.target.value)}
+            />
+          </div>
         </>
-
         <table className="table table-bordered">
-          {/* <Button onClick={handleShow}>ADDUSER</Button> */}
-          {/* <button
-          type="button"
-          className="btn btn-primary"
-          data-bs-toggle="modal"
-          data-bs-target="#myModal"
-
-          onClick={handleShow}
-        >
-          ADD USER
-        </button> */}
-
           <thead>
             <tr>
               <th scope="col">#</th>
@@ -148,7 +170,7 @@ export default function User() {
             </tr>
           </thead>
           <tbody>
-            {list.map((item) => {
+            {list.map((item: any) => {
               return (
                 <tr key={item.id}>
                   <td>{item.id}</td>
@@ -184,16 +206,16 @@ export default function User() {
             })}
           </tbody>
         </table>
-        {/* {/* <Modal show={show} onHide={handleClose}> */}
 
         <Offcanvas placement="end" show={showw} onHide={handleClosee}>
           <Offcanvas.Header closeButton>
-            <Offcanvas.Title>Add User</Offcanvas.Title>
+            <Offcanvas.Title>
+              {editUser ? "EditUser" : "Add user"}
+            </Offcanvas.Title>
           </Offcanvas.Header>
           <Offcanvas.Body>
             <Formik
               initialValues={{
-                id: null,
                 image: "",
                 firstName: "",
                 lastName: "",
@@ -203,32 +225,12 @@ export default function User() {
               }}
               validationSchema={validate}
               onSubmit={(values) => {
-                console.log("values ==> ", values);
-                console.log("hello");
-                const params = {
-                  ...values,
-                  image:
-                    typeof values.image !== "string"
-                      ? URL.createObjectURL(values.image)
-                      : "",
-                };
-                const newArr = [...list];
-                newArr.push(values);
-                setList(newArr);
-                console.log(newArr);
-                console.log("hello");
-                handleClose();
+                addNewUser(values);
+                handleClosee();
               }}
             >
               {({ errors, touched, setFieldValue }) => (
                 <Form>
-                  <div className="mb-3 mt-3">
-                    <label className="form-label">id</label>
-                    <Field name="id" type="text" className="form-control" />
-                    {errors.firstName && touched.firstName ? (
-                      <div className="errorm">{"id is necessary"}</div>
-                    ) : null}
-                  </div>
                   <div className="mb-3 mt-3">
                     <label className="form-label">image</label>
                     <Field
@@ -318,7 +320,6 @@ export default function User() {
           </Offcanvas.Body>
         </Offcanvas>
 
-        {/* </Modal> */}
         <Modal show={show} onHide={handleClose}>
           <div className="modal-content">
             <div className="modal-header">
@@ -359,9 +360,6 @@ export default function User() {
             </div>
           </div>
         </Modal>
-
-        {/* <Navbar />
-      <Sidebar /> */}
       </>
     </DashboardLayout>
   );

@@ -182,3 +182,37 @@ th {
 .offcanvas-title.h5 {
   font-size: 18px;
 }
+input#form1 {
+  width: 285px;
+  margin-left: 356px;
+  margin-top: -50px;
+  height: 35px;
+  margin-bottom: 19px;
+}
+button.btn.btn-danger {
+  margin-left: 812px;
+  width: 112px;
+  height: 37px;
+  font-size: 16px;
+}
+button.btn.btn-danger {
+  margin-left: 812px;
+  width: 105px;
+  height: 37px;
+  font-size: 15px;
+  margin-bottom: 15px;
+}
+/* ::before {
+  color: white;
+  font-size: 11px;
+  padding-left: 5px;
+} */
+
+i.fa.fa-plus {
+  color: white;
+  font-size: 11px;
+  padding-left: 7px;
+}
+div#navbarScroll {
+  margin-left: 1053px;
+}

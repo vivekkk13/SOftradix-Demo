@@ -1,5 +1,5 @@
 import React from "react";
-import { ProSidebar } from "react-pro-sidebar";
+
 import { Link } from "react-router-dom";
 
 export default function Sidebar() {
@@ -9,13 +9,19 @@ export default function Sidebar() {
         <div className="contain">
           <ul className="sidebar">
             <li>
-              <span>Dashboard</span>
+              <span>
+                <i className="fa fa-tachometer" aria-hidden="true"></i>
+              </span>
+              <Link to="/Dasboard" className="link-dark">
+                <span>Dashboard</span>
+              </Link>
             </li>
 
             <li>
               <span>
-                <i className="fa fa-users"></i>
+                <i className="fa fa-users" aria-hidden="true"></i>
               </span>
+
               <Link to="/User" className="link-dark">
                 <span>Users</span>
               </Link>
