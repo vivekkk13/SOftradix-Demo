@@ -5,8 +5,10 @@ import DashboardLayout from "./DashboardLayout";
 
 export default function Dashboard() {
   return (
-    <DashboardLayout>
-      <h3>This is Dashboard layout</h3>
-    </DashboardLayout>
+    <>
+      <DashboardLayout>
+        <h3>This is Dashboard layout</h3>
+      </DashboardLayout>
+    </>
   );
 }

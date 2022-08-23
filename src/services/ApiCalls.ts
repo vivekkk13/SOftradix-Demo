@@ -8,7 +8,7 @@ export const userList = (search: string) => {
         return response;
       });
   } catch (error) {
-    console.error(error);
+    console.log(error);
   }
 };
 
@@ -18,7 +18,7 @@ export const productList = () => {
       return response;
     });
   } catch (error) {
-    console.error(error);
+    console.log(error);
   }
 };
 
@@ -37,3 +37,5 @@ export const createUser = (data: any) => {
     console.log("error ==> ", error);
   }
 };
+
+export const updateUser = () => {};

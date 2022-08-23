@@ -13,7 +13,7 @@ import DashboardLayout from "./DashboardLayout";
 import Offcanvas from "react-bootstrap/Offcanvas";
 
 interface UserListType {
-  id: number | null;
+  id?: number | null;
   image: string | React.ChangeEvent<HTMLInputElement> | null;
   firstName: string;
   lastName: string;
@@ -27,7 +27,18 @@ export default function User() {
   let [checkdelete, setCheckDelete] = useState({});
   const [search, setSearch] = useState<string>("");
   const [addResponse, setAddResponse] = useState<any>({});
-  const [editUser, setEditUser] = useState("");
+  const [editUser, setEditUser] = useState({
+    check: false,
+    data: {
+      id: "",
+      image: "",
+      firstName: "",
+      lastName: "",
+      maidenName: "",
+      age: null,
+      email: "",
+    },
+  });
 
   /******        YUP validation start          ********/
 
@@ -35,52 +46,15 @@ export default function User() {
     firstName: Yup.string().max(20, "").required("name is required"),
     lastName: Yup.string()
       .max(20, "must be 20 character or less")
-      .required("name is required"),
+      .required("name is required!"),
     maidenName: Yup.string()
       .max(20, "must be 20 character or less ")
-      .required("name is required"),
-    age: Yup.number().max(100, "too short").required("age is required"),
-    email: Yup.string().email("invalid email").required("Required email"),
+      .required("Middlename is required!"),
+    age: Yup.number().max(100, "too short").required("age is required!"),
+    email: Yup.string().email("invalid email").required("email is required!"),
   });
 
   /******        YUP validation end       ********/
-
-  // useEffect(() => {
-  //   console.log("addData ==> ", addData);
-  // }, [addData]);
-
-  // useEffect(() => {
-  //   console.log("list ==> ", list);
-  // }, [list]);
-
-  // const handleChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-  //   let name = event.target.name;
-  //   let value: string;
-  //   if (name == "image") {
-  //     if (event.target.files && event.target.files[0]) {
-  //       value = URL.createObjectURL(event.target.files[0]);
-  //     }
-  //   } else {
-  //     value = event.target.value;
-  //   }
-
-  //   setAddData((prevalue) => {
-  //     return {
-  //       ...prevalue,
-  //       [name]: value,
-  //     };
-  //   });
-  // };
-
-  // const handleSubmit = (event: any) => {
-  //   console.log("hello");
-
-  //   event.preventDefault();
-  //   const newArr = [...list];
-  //   newArr.push(addData);
-  //   setList(newArr);
-  //   console.log("hello");
-  // };
 
   /********     for open or closing Modal start         ****** */
   const [show, setShow] = useState(false);
@@ -120,13 +94,24 @@ export default function User() {
     console.log("response <===> ", response);
     setAddResponse(response?.data);
   };
+
   useEffect(() => {
     const newAns = [...list];
-    newAns.unshift(addResponse);
+    newAns.push(addResponse);
     setList(newAns);
   }, [addResponse]);
 
   /*******   Function for add a user (end)    ****** */
+
+  const updateUser = (values: any) => {
+    let newArr = [...list];
+    let index = newArr.findIndex((item) => item.id === values.id);
+    const newObj = { ...list[index], ...values };
+    newArr[index] = newObj;
+    console.log("index===>", index);
+    console.log("newArr===>", newArr);
+    setList(newArr);
+  };
 
   return (
     <DashboardLayout>
@@ -136,7 +121,21 @@ export default function User() {
           <button
             type="button"
             className="btn btn-danger"
-            onClick={handleShoww}
+            onClick={() => {
+              setEditUser({
+                check: false,
+                data: {
+                  id: "",
+                  image: "",
+                  firstName: "",
+                  lastName: "",
+                  maidenName: "",
+                  age: null,
+                  email: "",
+                },
+              });
+              handleShoww();
+            }}
           >
             Add User
             <span>
@@ -188,7 +187,15 @@ export default function User() {
                   <td scope="row">{item.email}</td>
 
                   <td>
-                    <button className="btn btn-outline-info">Edit</button>
+                    <button
+                      className="btn btn-outline-info"
+                      onClick={() => {
+                        setEditUser({ check: true, data: item });
+                        handleShoww();
+                      }}
+                    >
+                      Edit
+                    </button>
                   </td>
                   <td>
                     <button
@@ -210,22 +217,28 @@ export default function User() {
         <Offcanvas placement="end" show={showw} onHide={handleClosee}>
           <Offcanvas.Header closeButton>
             <Offcanvas.Title>
-              {editUser ? "EditUser" : "Add user"}
+              {editUser.check ? "Edit User" : "Add user"}
             </Offcanvas.Title>
           </Offcanvas.Header>
           <Offcanvas.Body>
             <Formik
               initialValues={{
+                id: editUser.check ? editUser.data.id : "",
                 image: "",
-                firstName: "",
-                lastName: "",
-                maidenName: "",
-                age: null,
-                email: "",
+                firstName: editUser.check ? editUser.data.firstName : "",
+                lastName: editUser.check ? editUser.data.lastName : "",
+                maidenName: editUser.check ? editUser.data.maidenName : "",
+                age: editUser.check ? editUser.data.age : null,
+                email: editUser.check ? editUser.data.email : "",
               }}
               validationSchema={validate}
               onSubmit={(values) => {
-                addNewUser(values);
+                if (editUser.check) {
+                  updateUser(values);
+                } else {
+                  addNewUser(values);
+                }
+
                 handleClosee();
               }}
             >
@@ -259,7 +272,7 @@ export default function User() {
                       placeholder="Firstname..."
                     />
                     {errors.firstName && touched.firstName ? (
-                      <div className="errorm">{"first name is necessary"}</div>
+                      <div className="errorm">{"firstname is required!"}</div>
                     ) : null}
                   </div>
                   <div className="mb-3 mt-3">
@@ -270,9 +283,7 @@ export default function User() {
                       placeholder="Lastname..."
                     />
                     {errors.lastName && touched.lastName ? (
-                      <div className="errorm">
-                        {"last name is required feild"}
-                      </div>
+                      <div className="errorm">{"lastname is required!"}</div>
                     ) : null}
                   </div>
 
@@ -284,7 +295,7 @@ export default function User() {
                       placeholder="Middlename..."
                     />
                     {errors.maidenName && touched.maidenName ? (
-                      <div className="errorm">{"where is mname"}</div>
+                      <div className="errorm">{"middlename is required!"}</div>
                     ) : null}
                   </div>
 
@@ -296,7 +307,7 @@ export default function User() {
                       placeholder="Age..."
                     />
                     {errors.age && touched.age ? (
-                      <div className="errorm">{"age is required"}</div>
+                      <div className="errorm">{"age is required!"}</div>
                     ) : null}
                   </div>
 
