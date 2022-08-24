@@ -219,3 +219,11 @@ div#navbarScroll {
 img {
   height: 57px;
 }
+input#form1 {
+  width: 285px;
+  margin-left: 356px;
+  margin-top: -50px;
+  height: 35px;
+  margin-bottom: 19px;
+  border-color: black;
+}

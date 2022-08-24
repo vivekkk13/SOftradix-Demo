@@ -12,11 +12,13 @@ export const userList = (search: string) => {
   }
 };
 
-export const productList = () => {
+export const productList = (searchProduct: string) => {
   try {
-    return axios.get("https://dummyjson.com/products").then((response) => {
-      return response;
-    });
+    return axios
+      .get(`https://dummyjson.com/products/search?q=${searchProduct}`)
+      .then((response) => {
+        return response;
+      });
   } catch (error) {
     console.log(error);
   }
@@ -38,4 +40,18 @@ export const createUser = (data: any) => {
   }
 };
 
-export const updateUser = () => {};
+export const createProduct = (item: any) => {
+  try {
+    return axios({
+      method: "post",
+      url: "https://dummyjson.com/products/add",
+      data: item,
+      headers: { "Content-Type": "application/json" },
+    }).then((response) => {
+      console.log("response ==> ", response);
+      return response;
+    });
+  } catch (error) {
+    console.log("error ==> ", error);
+  }
+};

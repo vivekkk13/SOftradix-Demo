@@ -1,15 +1,18 @@
 import React, { useEffect, useState } from "react";
 import { Button, Table, Form } from "react-bootstrap";
 import Sidebar from "../common/Sidebar";
-import { productList } from "../services/ApiCalls";
+import { createProduct, productList } from "../services/ApiCalls";
 import Modal from "react-bootstrap/Modal";
+import Offcanvas from "react-bootstrap/Offcanvas";
+
 import DashboardLayout from "./DashboardLayout";
+import { number } from "yup/lib/locale";
 
 interface productListType {
-  id: number | null;
+  id?: number | null;
   title: string;
-  thumbnail: string;
-  Description: string;
+  thumbnail?: string;
+  Description?: string;
   price: number | null;
   rating: number | null;
   brand: string;
@@ -17,69 +20,74 @@ interface productListType {
 
 export default function Product() {
   let [data, setData] = useState<productListType[]>([]);
-
-  const [addItem, setAddItem] = useState<productListType>({
-    id: null,
+  const [searchProduct, setSearchProduct] = useState("");
+  const [deleteProduct, setDeleteProduct] = useState({});
+  const [formValues, setFormValues] = useState<any>({
     title: "",
-    thumbnail: "",
-    Description: "",
     price: null,
-    rating: null,
+    ratin: null,
     brand: "",
   });
+  const [show, setShow] = useState(false);
+
+  const handleClose = () => setShow(false);
+  const handleShow = () => setShow(true);
+
+  const getProductList = async (searchProduct: string) => {
+    const res = await productList(searchProduct);
+    setData(res?.data.products);
+  };
   useEffect(() => {
-    console.log("addItem ==> ", addItem);
-  }, [addItem]);
+    getProductList(searchProduct);
+  }, [searchProduct]);
+
+  const deleteprod = (user: any) => {
+    const newProductList = data.filter((item) => item.id != user.id);
+    setData(newProductList);
+  };
+  const [showw, setShoww] = useState(false);
+
+  const handleClosee = () => setShoww(false);
+  const handleShoww = () => setShoww(true);
+
+  const addproduct = async () => {
+    const response = await createProduct(formValues);
+    console.log("response <===> ", response);
+    const newArr = [...data];
+    newArr.push(formValues);
+    setData(newArr);
+  };
 
   useEffect(() => {
     console.log("data ==> ", data);
   }, [data]);
 
-  const handleChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-    let value = event.target.value;
-    let name = event.target.value;
-
-    setAddItem((prevalue) => {
-      return {
-        ...prevalue,
-        [name]: value,
-      };
-    });
-  };
-
-  const handleSubmit = (event: any) => {
-    console.log("hello");
-
-    event.preventDefault();
-    const newAns = [...data];
-    newAns.push(addItem);
-    setData(newAns);
-    console.log("hello");
-  };
-
-  const [show, setShow] = useState(false);
-  const handleClose = () => setShow(false);
-  const handleShow = () => setShow(true);
-
-  const getProductList = async () => {
-    const res = await productList();
-    setData(res?.data.products);
-  };
-  useEffect(() => {
-    getProductList();
-  }, []);
-  const deleteUser = (user: any) => {
-    const newProductList = data.filter((item) => item.id != user.id);
-    setData(newProductList);
-  };
-
   return (
     <DashboardLayout>
       <>
-        <h1>Products</h1>
+        <strong>All Products</strong>{" "}
+        <button
+          type="button"
+          className="btn btn-danger"
+          onClick={() => {
+            handleShoww();
+          }}
+        >
+          {" "}
+          ADDProduct
+        </button>
+        <div className="form-outline">
+          <input
+            type="search"
+            id="form1"
+            className="form-control"
+            placeholder="Search Product.."
+            aria-label="Search"
+            value={searchProduct}
+            onChange={(e) => setSearchProduct(e.target.value)}
+          />
+        </div>
         <table className="table table-bordered">
-          {/* <Button onClick={handleShow}> ADDProduct</Button> */}
-
           <thead>
             <tr>
               <th>#</th>
@@ -108,12 +116,18 @@ export default function Product() {
                   <td>{item.brand}</td>
 
                   <td>
-                    <Button>Edit</Button>
+                    <button className="btn btn-outline-secondary">Edit</button>
                   </td>
                   <td>
-                    <Button onClick={() => deleteUser(item)}>
+                    <button
+                      className="btn btn-outline-secondary"
+                      onClick={() => {
+                        setDeleteProduct(item);
+                        handleShow();
+                      }}
+                    >
                       DeleteProduct
-                    </Button>
+                    </button>
                   </td>
                 </tr>
               );
@@ -121,53 +135,115 @@ export default function Product() {
           </tbody>
         </table>
         <Modal show={show} onHide={handleClose}>
-          <Form onSubmit={handleSubmit}>
-            <>
-              <strong>AddProduct</strong>
-            </>
-            <br></br>
-            <label>id</label>
-            <input
-              type="id"
-              placeholder="id.."
-              name="id"
-              onChange={handleChange}
-            ></input>
-            <label>title</label>
-            <input
-              type="name"
-              placeholder="Title"
-              name="title"
-              onChange={handleChange}
-            ></input>
-            <label>price</label>
-            <input
-              type="text"
-              placeholder="price"
-              name="price"
-              onChange={handleChange}
-            ></input>
-            <label>rating</label>
-            <input
-              type="text"
-              name="rating"
-              onChange={handleChange}
-              placeholder="rating.."
-            ></input>
-            <label>brand </label>
-            <input
-              type="text"
-              name="brand	"
-              onChange={handleChange}
-              placeholder="brand"
-            ></input>
-
-            <Button variant="primary" type="submit" onClick={handleClose}>
-              Addproduct
-            </Button>
-          </Form>
+          <div className="modal-content">
+            <div className="modal-header">
+              <h5 className="modal-title" id="exampleModalLabel">
+                Delete User
+              </h5>
+              <button
+                type="button"
+                className="btn-close"
+                data-bs-dismiss="modal"
+                aria-label="Close"
+              ></button>
+            </div>
+            <div className="modal-body">
+              Are you sure you want to delete this Product
+            </div>
+            <div className="modal-footer">
+              <button
+                type="button"
+                className="btn btn-secondary"
+                data-bs-dismiss="modal"
+                onClick={() => {
+                  handleClose();
+                }}
+              >
+                no
+              </button>
+              <button
+                type="button"
+                className="btn btn-primary"
+                onClick={() => {
+                  deleteprod(deleteProduct);
+                  handleClose();
+                }}
+              >
+                yes
+              </button>
+            </div>
+          </div>
         </Modal>
-        {/* <Sidebar /> */}
+        <Offcanvas placement="end" show={showw} onHide={handleClosee}>
+          <Offcanvas.Header closeButton>
+            <Offcanvas.Title> Add Product Here</Offcanvas.Title>
+          </Offcanvas.Header>
+          <Offcanvas.Body>
+            <form>
+              <div className="mb-3">
+                <label className="form-label">Title</label>
+                <input
+                  type="input"
+                  className="form-control"
+                  onChange={(e) =>
+                    setFormValues({ ...formValues, title: e.target.value })
+                  }
+                  id="exampleInputEmail1"
+                  aria-describedby="emailHelp"
+                ></input>
+              </div>
+              <div className="mb-3">
+                <label className="form-label">Price</label>
+                <input
+                  name="number"
+                  type="input"
+                  className="form-control"
+                  id="exampleInputPassword1"
+                  onChange={(e) =>
+                    setFormValues({ ...formValues, price: e.target.value })
+                  }
+                  aria-describedby="emailHelp"
+                ></input>
+              </div>
+              <div className="mb-3">
+                <label className="form-label">Rating</label>
+                <input
+                  name="number"
+                  type="input"
+                  className="form-control"
+                  id="exampleInputPassword1"
+                  aria-describedby="emailHelp"
+                  onChange={(e) =>
+                    setFormValues({ ...formValues, rating: e.target.value })
+                  }
+                ></input>
+              </div>
+              <div className="mb-3">
+                <label className="form-label">Brand</label>
+                <input
+                  type="input"
+                  className="form-control"
+                  id="exampleInputPassword1"
+                  aria-describedby="emailHelp"
+                  onChange={(e) =>
+                    setFormValues({ ...formValues, brand: e.target.value })
+                  }
+                ></input>
+              </div>
+
+              <button
+                type="button"
+                className="btn btn-primary"
+                onClick={() => {
+                  addproduct();
+                  handleClosee();
+                }}
+              >
+                Submit
+              </button>
+            </form>
+          </Offcanvas.Body>
+        </Offcanvas>
       </>
     </DashboardLayout>
   );

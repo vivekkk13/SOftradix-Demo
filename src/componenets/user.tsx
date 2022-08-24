@@ -51,7 +51,9 @@ export default function User() {
       .max(20, "must be 20 character or less ")
       .required("Middlename is required!"),
     age: Yup.number().max(100, "too short").required("age is required!"),
-    email: Yup.string().email("invalid email").required("email is required!"),
+    email: Yup.string()
+      .email("Email should be valid and contain @")
+      .required("Email is required"),
   });
 
   /******        YUP validation end       ********/
@@ -106,6 +108,8 @@ export default function User() {
   const updateUser = (values: any) => {
     let newArr = [...list];
     let index = newArr.findIndex((item) => item.id === values.id);
+    console.log("index =====>", index);
+
     const newObj = { ...list[index], ...values };
     newArr[index] = newObj;
     console.log("index===>", index);
@@ -318,6 +322,7 @@ export default function User() {
                       className="form-control"
                       placeholder="Email..."
                     />
+
                     {errors.email && touched.email ? (
                       <div className="errorm">{errors.email}</div>
                     ) : null}
