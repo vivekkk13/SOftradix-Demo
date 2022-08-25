@@ -13,8 +13,8 @@ interface productListType {
   title: string;
   thumbnail?: string;
   Description?: string;
-  price: number | null;
-  rating: number | null;
+  price?: number | null;
+  rating?: number | null;
   brand: string;
 }
 
@@ -23,11 +23,28 @@ export default function Product() {
   const [searchProduct, setSearchProduct] = useState("");
   const [deleteProduct, setDeleteProduct] = useState({});
   const [formValues, setFormValues] = useState<any>({
-    title: "",
-    price: null,
-    ratin: null,
-    brand: "",
+    check: false,
+    list: {
+      id: "",
+      title: "",
+      price: null,
+      rating: null,
+      brand: "",
+    },
   });
+  // const [editProduct, setEditProduct] = useState<{
+  //   check: boolean;
+  //   list: productListType;
+  // }>({
+  //   check: false,
+  //   list: {
+  //     id: null,
+  //     title: "",
+  //     price: null,
+  //     rating: null,
+  //     brand: "",
+  //   },
+  // });
   const [show, setShow] = useState(false);
 
   const handleClose = () => setShow(false);
@@ -50,7 +67,7 @@ export default function Product() {
   const handleClosee = () => setShoww(false);
   const handleShoww = () => setShoww(true);
 
-  const addproduct = async () => {
+  const addproduct = async (formValues: any) => {
     const response = await createProduct(formValues);
     console.log("response <===> ", response);
     const newArr = [...data];
@@ -58,9 +75,13 @@ export default function Product() {
     setData(newArr);
   };
 
-  useEffect(() => {
-    console.log("data ==> ", data);
-  }, [data]);
+  const updateProduct = (value: any) => {
+    let newAns = [...data];
+    let index = data.findIndex((val) => val.id === value.id);
+    const newObj = { ...data[index], ...value };
+    newAns[index] = newObj;
+    setData(newAns);
+  };
 
   return (
     <DashboardLayout>
@@ -70,6 +91,17 @@ export default function Product() {
           type="button"
           className="btn btn-danger"
           onClick={() => {
+            setFormValues({
+              check: false,
+              list: {
+                id: null,
+                title: "",
+                price: null,
+                rating: null,
+                brand: "",
+              },
+            });
+
             handleShoww();
           }}
         >
@@ -116,7 +148,15 @@ export default function Product() {
                   <td>{item.brand}</td>
 
                   <td>
-                    <button className="btn btn-outline-secondary">Edit</button>
+                    <button
+                      className="btn btn-outline-secondary"
+                      onClick={() => {
+                        setFormValues({ check: true, list: item });
+                        handleShoww();
+                      }}
+                    >
+                      Edit
+                    </button>
                   </td>
                   <td>
                     <button
@@ -176,13 +216,17 @@ export default function Product() {
         </Modal>
         <Offcanvas placement="end" show={showw} onHide={handleClosee}>
           <Offcanvas.Header closeButton>
-            <Offcanvas.Title> Add Product Here</Offcanvas.Title>
+            <Offcanvas.Title>
+              {" "}
+              {formValues.check ? "Edit product Here" : "Add product here"}
+            </Offcanvas.Title>
           </Offcanvas.Header>
           <Offcanvas.Body>
             <form>
               <div className="mb-3">
                 <label className="form-label">Title</label>
                 <input
+                  value={formValues.list.title}
                   type="input"
                   className="form-control"
                   onChange={(e) =>
@@ -195,6 +239,7 @@ export default function Product() {
               <div className="mb-3">
                 <label className="form-label">Price</label>
                 <input
+                  value={formValues.list.price}
                   name="number"
                   type="input"
                   className="form-control"
@@ -208,6 +253,7 @@ export default function Product() {
               <div className="mb-3">
                 <label className="form-label">Rating</label>
                 <input
+                  value={formValues.list.rating}
                   name="number"
                   type="input"
                   className="form-control"
@@ -221,6 +267,7 @@ export default function Product() {
               <div className="mb-3">
                 <label className="form-label">Brand</label>
                 <input
+                  value={formValues.list.brand}
                   type="input"
                   className="form-control"
                   id="exampleInputPassword1"
@@ -234,8 +281,12 @@ export default function Product() {
               <button
                 type="button"
                 className="btn btn-primary"
-                onClick={() => {
-                  addproduct();
+                onClick={(list) => {
+                  if (formValues.check) {
+                    updateProduct(list);
+                  } else {
+                    addproduct(list);
+                  }
                   handleClosee();
                 }}
               >

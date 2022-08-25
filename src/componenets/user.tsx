@@ -9,7 +9,8 @@ import { Formik, Form, Field } from "formik";
 import * as Yup from "yup";
 import { Navbar } from "../common/Navbar";
 import DashboardLayout from "./DashboardLayout";
-
+import { ToastContainer, toast } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 import Offcanvas from "react-bootstrap/Offcanvas";
 
 interface UserListType {
@@ -138,6 +139,7 @@ export default function User() {
                   email: "",
                 },
               });
+
               handleShoww();
             }}
           >
@@ -217,7 +219,6 @@ export default function User() {
             })}
           </tbody>
         </table>
-
         <Offcanvas placement="end" show={showw} onHide={handleClosee}>
           <Offcanvas.Header closeButton>
             <Offcanvas.Title>
@@ -239,11 +240,19 @@ export default function User() {
               onSubmit={(values) => {
                 if (editUser.check) {
                   updateUser(values);
-                } else {
-                  addNewUser(values);
-                }
 
-                handleClosee();
+                  handleClosee();
+                  toast("edit successfully");
+                } else {
+                  if (list.find((item) => item.email === values.email)) {
+                    alert("email already exist");
+                  } else {
+                    addNewUser(values);
+
+                    handleClosee();
+                    toast("added sucessfully");
+                  }
+                }
               }}
             >
               {({ errors, touched, setFieldValue }) => (
@@ -330,6 +339,7 @@ export default function User() {
                   <Button type="submit" className="btn_sub">
                     Submit{" "}
                   </Button>
+                  <ToastContainer />
                 </Form>
               )}
             </Formik>
@@ -376,6 +386,7 @@ export default function User() {
             </div>
           </div>
         </Modal>
+        <ToastContainer />
       </>
     </DashboardLayout>
   );
